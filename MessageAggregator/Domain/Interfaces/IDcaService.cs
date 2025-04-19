@@ -5,6 +5,6 @@ namespace MessageAggregator.Domain.Interfaces
 {
     public interface IDcaService
     {
-        Task<CategorySummaryDto> AnalyzeAndSummarizeAsync(string data);
+        Task<AiAnalysisResultDto> AnalyzeAndSummarizeAsync(List<string> data);
     }
 }

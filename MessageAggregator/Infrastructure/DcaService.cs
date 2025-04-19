@@ -13,9 +13,10 @@ namespace Infrastructure
             _aiService = aiService;
         }
 
-        public async Task<CategorySummaryDto> AnalyzeAndSummarizeAsync(string data)
+        // Update return type to match interface
+        public async Task<AiAnalysisResultDto> AnalyzeAndSummarizeAsync(List<string> data)
         {
-            // Call AI service to get summary and category
+            // Call AI service to get the analysis result DTO
             return await _aiService.AnalyzeAsync(data);
         }
     }

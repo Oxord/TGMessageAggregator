@@ -26,6 +26,13 @@ namespace Infrastructure.Repositories
             return await _context.Categories.FindAsync(id);
         }
 
+        public async Task<Category?> GetByNameAsync(string name)
+        {
+            // Case-insensitive search for the category name
+            return await _context.Categories
+                                 .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
+        }
+
         public async Task AddAsync(Category category)
         {
             await _context.Categories.AddAsync(category);

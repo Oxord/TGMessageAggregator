@@ -7,28 +7,36 @@ using MessageAggregator.Domain.Interfaces;
 using MessageAggregator.Domain.DTOs;
 using Newtonsoft.Json;
 using System;
+using Domain.Models; // Added for Category model
 
 namespace Infrastructure
 {
     public class AiService : IAIService
     {
         private readonly HttpClient _httpClient;
+        private readonly ICategoryRepository _categoryRepository; // Added repository
         private readonly string _apiKey;
         private readonly string _endpoint;
         private readonly string _model;
 
-        public AiService(HttpClient httpClient, IConfiguration configuration)
+        // Inject ICategoryRepository
+        public AiService(HttpClient httpClient, IConfiguration configuration, ICategoryRepository categoryRepository)
         {
             _httpClient = httpClient;
+            _categoryRepository = categoryRepository; // Assign injected repository
             _apiKey = configuration["OpenAI:ApiKey"];
             _endpoint = configuration["OpenAI:Endpoint"];
             _model = configuration["OpenAI:Model"];
         }
 
-        public async Task<CategorySummaryDto> AnalyzeAsync(string data)
+        // Change parameter type to IEnumerable<string>
+        public async Task<AiAnalysisResultDto> AnalyzeAsync(IEnumerable<string> data)
         {
-            // Формируем prompt для OpenAI
-            var prompt = $"Проанализируй следующий текст и определи его краткое содержание и категорию (например, 'Error', 'Info', 'Other'). Ответь в формате: {{\"summary\": \"...\", \"category\": \"...\"}}. Текст: {data}";
+            // Сериализуем массив строк в JSON
+            var jsonData = JsonConvert.SerializeObject(data);
+
+            // Формируем prompt для OpenAI, вставляя JSON-строку
+            var prompt = $"Проанализируй следующий массив строк в формате JSON и определи общее краткое содержание и категорию (например, 'Error', 'Info', 'Other') для всего массива. Ответь в формате: {{\"summary\": \"...\", \"category\": \"...\"}}. Массив строк: {jsonData}";
 
             var requestBody = new
             {
@@ -64,29 +72,70 @@ namespace Infrastructure
 
                 dynamic result = JsonConvert.DeserializeObject(responseContent);
                 string content = result?.choices?[0]?.message?.content;
+                string summaryText = "AI response parsing error";
+                string categoryName = "Unknown";
+                int? categoryId = null;
 
                 // Парсим JSON из ответа модели
                 if (!string.IsNullOrEmpty(content))
                 {
-                    var aiResult = JsonConvert.DeserializeObject<CategorySummaryDto>(content);
-                    if (aiResult != null)
-                        return aiResult;
+                    try
+                    {
+                        // Use a temporary DTO or anonymous type for initial parsing
+                        var aiResponse = JsonConvert.DeserializeAnonymousType(content, new { summary = "", category = "" });
+                        if (aiResponse != null && !string.IsNullOrWhiteSpace(aiResponse.summary) && !string.IsNullOrWhiteSpace(aiResponse.category))
+                        {
+                            summaryText = aiResponse.summary;
+                            categoryName = aiResponse.category.Trim(); // Trim whitespace
+
+                            // Find category by name using the repository
+                            Category? category = await _categoryRepository.GetByNameAsync(categoryName);
+                            categoryId = category?.Id; // Assign ID if found, otherwise null
+                        }
+                        else
+                        {
+                            // If parsing gives unexpected structure, use the raw content
+                            summaryText = content;
+                        }
+                    }
+                    catch (JsonException jsonEx)
+                    {
+                        // Handle JSON parsing specific errors, maybe log jsonEx
+                        summaryText = $"AI response JSON parsing error: {content}. Error message: {jsonEx.Message}";
+                        categoryName = "Error";
+                        // Optionally find the 'Error' category ID here if needed
+                        Category? errorCategory = await _categoryRepository.GetByNameAsync("Error");
+                        categoryId = errorCategory?.Id;
+                    }
                 }
 
-                // Fallback: если не удалось распарсить, возвращаем весь ответ как summary
-                return new CategorySummaryDto
+                return new AiAnalysisResultDto
                 {
-                    Summary = content ?? "AI response parsing error",
-                    Category = "Unknown"
+                    SummaryText = summaryText,
+                    CategoryId = categoryId,
+                    OriginalCategoryName = categoryName
+                };
+            }
+            catch (HttpRequestException httpEx)
+            {
+                // Handle HTTP specific errors
+                Category? errorCategory = await _categoryRepository.GetByNameAsync("Error");
+                return new AiAnalysisResultDto
+                {
+                    SummaryText = $"AI HTTP error: {httpEx.Message}",
+                    CategoryId = errorCategory?.Id,
+                    OriginalCategoryName = "Error"
                 };
             }
             catch (Exception ex)
             {
-                // В случае ошибки возвращаем информацию об ошибке
-                return new CategorySummaryDto
+                // Handle other general errors
+                Category? errorCategory = await _categoryRepository.GetByNameAsync("Error");
+                return new AiAnalysisResultDto
                 {
-                    Summary = $"AI error: {ex.Message}",
-                    Category = "Error"
+                    SummaryText = $"AI general error: {ex.Message}",
+                    CategoryId = errorCategory?.Id,
+                    OriginalCategoryName = "Error"
                 };
             }
         }

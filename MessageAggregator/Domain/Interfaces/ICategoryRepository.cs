@@ -10,6 +10,8 @@ namespace MessageAggregator.Domain.Interfaces
 
         Task<Category?> GetByIdAsync(int id);
 
+        Task<Category?> GetByNameAsync(string name);
+
         Task AddAsync(Category category);
 
         Task DeleteAsync(int id);
