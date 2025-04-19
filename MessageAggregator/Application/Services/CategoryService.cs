@@ -4,8 +4,7 @@ using MessageAggregator.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-namespace MessageAggregator.Application.Services // Assuming MessageAggregator.Application.Services namespace
+namespace MessageAggregator.Application.Services
 {
     public class CategoryService : ICategoryService
     {

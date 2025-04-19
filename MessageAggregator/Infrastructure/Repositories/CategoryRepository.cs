@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Repositories // Assuming Infrastructure.Repositories namespace
+namespace Infrastructure.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
