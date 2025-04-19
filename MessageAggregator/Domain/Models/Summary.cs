@@ -1,25 +1,9 @@
-﻿using System;
+﻿namespace MessageAggregator.Domain.Models;
 
-namespace Domain.Models
+public class Summary(string chatName, string description, DateTime createdAt)
 {
-    public class Summary
-    {
-        public Guid Id { get; set; }
-        public string ChatName { get; set; }
-        public string Description { get; set; }
-        public int CategoryId { get; set; }
-        public Category Category { get; set; }
-        public DateTime CreatedAt { get; set; }
-
-        public Summary() { }
-
-        public Summary(string chatName, string description, int categoryId, DateTime createdAt)
-        {
-            Id = Guid.NewGuid();
-            ChatName = chatName;
-            Description = description;
-            CategoryId = categoryId;
-            CreatedAt = createdAt;
-        }
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string ChatName { get; set; } = chatName;
+    public string Description { get; set; } = description;
+    public DateTime CreatedAt { get; set; } = createdAt;
 }

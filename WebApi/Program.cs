@@ -1,7 +1,4 @@
-using Infrastructure;
-using Infrastructure.Repositories;
 using MessageAggregator.Application.Service;
-using MessageAggregator.Application.Services;
 using MessageAggregator.Domain.Interfaces;
 using MessageAggregator.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +10,8 @@ builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("T
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<TelegramService>();
-builder.Services.AddScoped<CategoryRepository>();
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<IAIService, AiService>();
-builder.Services.AddScoped<IDcaService, DcaService>();
+builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddScoped<IDcaService, DcaService>().AddHttpClient();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,23 +1,14 @@
-using System.Threading.Tasks;
-using MessageAggregator.Domain.Interfaces;
 using MessageAggregator.Domain.DTOs;
+using MessageAggregator.Domain.Interfaces;
 
-namespace Infrastructure
+namespace MessageAggregator.Infrastructure;
+
+public class DcaService(IAiService aiService) : IDcaService
 {
-    public class DcaService : IDcaService
+    // Update return type to match interface
+    public async Task<AiAnalysisResultDto> AnalyzeAndSummarizeAsync(List<string> data)
     {
-        private readonly IAIService _aiService;
-
-        public DcaService(IAIService aiService)
-        {
-            _aiService = aiService;
-        }
-
-        // Update return type to match interface
-        public async Task<AiAnalysisResultDto> AnalyzeAndSummarizeAsync(List<string> data)
-        {
-            // Call AI service to get the analysis result DTO
-            return await _aiService.AnalyzeAsync(data);
-        }
+        // Call AI service to get the analysis result DTO
+        return await aiService.AnalyzeAsync(data);
     }
 }
