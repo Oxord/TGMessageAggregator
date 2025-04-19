@@ -1,31 +1,31 @@
 using Infrastructure;
-using MessageAggregator.Application.Interfaces;
+using Infrastructure.Repositories;
+using MessageAggregator.Application.Service;
+using MessageAggregator.Application.Services;
 using MessageAggregator.Domain.Interfaces;
 using MessageAggregator.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-// using MessageAggregator.Domain.Interfaces;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<TelegramService>();
+builder.Services.AddScoped<CategoryRepository>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<IAIService, AiService>();
+builder.Services.AddScoped<IDcaService, DcaService>();
 
-        builder.Services.AddControllers();
-        builder.Services.AddDbContext<AppDbContext>( options =>
-            options.UseNpgsql( builder.Configuration.GetConnectionString( "DefaultConnection" ) ) );
-        builder.Services.AddScoped<ICategoryRepository, Infrastructure.Repositories.CategoryRepository>();
-        builder.Services.AddScoped<ICategoryService, MessageAggregator.Application.Services.CategoryService>();
-        builder.Services.AddScoped<IAIService, AiService>();
-        builder.Services.AddScoped<IDcaService, DcaService>();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
