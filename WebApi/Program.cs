@@ -14,7 +14,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             options.UseNpgsql( builder.Configuration.GetConnectionString( "DefaultConnection" ) ) );
         builder.Services.AddScoped<ICategoryRepository, Infrastructure.Repositories.CategoryRepository>();
         builder.Services.AddScoped<ICategoryService, MessageAggregator.Application.Services.CategoryService>();
-        builder.Services.AddScoped<IAIService, AiService>();
+        builder.Services.AddHttpClient<IAIService, AiService>();
         builder.Services.AddScoped<IDcaService, DcaService>();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
