@@ -10,14 +10,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  webapi:
-    build:
-      context: ./
-      dockerfile: ./WebApi/Dockerfile
-    depends_on:
-      - postgres
-    ports:
-      - "5000:8080"
+#  webapi:
+#    build:
+#      context: ./
+#      dockerfile: ./WebApi/Dockerfile
+#    depends_on:
+#      - postgres
+#    ports:
+#      - "5000:8080"
 
 volumes:
   pgdata:
