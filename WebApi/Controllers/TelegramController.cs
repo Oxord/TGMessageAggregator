@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using MessageAggregator.Application.Service;
 using MessageAggregator.Domain.DTOs;
 using MessageAggregator.Domain.Interfaces;
+using MessageAggregator.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using TL;
 
@@ -22,13 +23,13 @@ public class TelegramController(TelegramService telegramService, IDcaService dca
     }
 
     [HttpPost("/chats/summary")]
-    public async Task<ActionResult<AiAnalysisResultDto>> SummarizeChat(
+    public async Task<ActionResult<Summary>> SummarizeChat(
         [Required] [FromQuery] long chatId,
         [FromQuery] int count = 100
     )
     {
         List<string> messages = await telegramService.GetMessagesAsync(chatId, count);
-        AiAnalysisResultDto analysisResult = await dcaService.AnalyzeAndSummarizeAsync(messages);
-        return Ok(analysisResult);
+        Summary summary = await dcaService.AnalyzeAndSummarizeAsync(messages, chatId.ToString());
+        return Ok(summary);
     }
 }

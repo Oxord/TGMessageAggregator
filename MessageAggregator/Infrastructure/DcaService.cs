@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MessageAggregator.Domain.Interfaces;
-using Domain.Models; // Added for Summary
+using MessageAggregator.Domain.Models;
 using MessageAggregator.Infrastructure; // Added for AppDbContext
 using Microsoft.EntityFrameworkCore; // Added for ToListAsync, Where
 

@@ -5,13 +5,13 @@ using System.Threading.Tasks; // Keep one
 using Microsoft.Extensions.Configuration; // Keep one
 // Removed duplicate usings
 using MessageAggregator.Domain.Interfaces;
-// Removed unused DTO using: using MessageAggregator.Domain.DTOs;
+using MessageAggregator.Domain.Interfaces;
 using Newtonsoft.Json;
 using System;
-using Domain.Models; // Added for Summary
+using MessageAggregator.Domain.Models;
 using MessageAggregator.Infrastructure; // Added for AppDbContext
 using Microsoft.EntityFrameworkCore; // Added for SaveChangesAsync etc.
-using Microsoft.Extensions.Logging; // Optional: Added for logging errors
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure
 {
