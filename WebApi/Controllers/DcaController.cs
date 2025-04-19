@@ -1,42 +1,72 @@
 using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MessageAggregator.Domain.Interfaces;
-using MessageAggregator.Domain.DTOs;
-// Add this for Summary and Category
+using Domain.Models; // Keep for Summary
 using System;
-using MessageAggregator.Domain.Models; // Add this for DateTime
+using System.Collections.Generic; // Added for List<string> and IEnumerable<Summary>
 
 namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class DcaController(IDcaService dcaService) : ControllerBase
+    public class DcaController : ControllerBase
     {
+        private readonly IDcaService _dcaService;
+        // Removed ICategoryRepository field
+
+        public DcaController(IDcaService dcaService) // Removed repository from constructor
+        {
+            _dcaService = dcaService;
+            // Removed repository assignment
+        }
+
         // POST: api/dca/analyze
         [HttpPost("analyze")]
         public async Task<ActionResult<Summary>> Analyze([FromBody] AnalyzeRequest request) // Change return type to Summary
         {
-            if (request?.Data.Count < 1)
+            // Add null check for request itself before accessing Data
+            if (request == null || request.Data == null || request.Data.Count < 1)
             {
-                return BadRequest("Data is required.");
+                return BadRequest("Request body is invalid or data is required.");
+            }
+            // Add ChatName check
+            if (string.IsNullOrWhiteSpace(request.ChatName))
+            {
+                return BadRequest("ChatName is required.");
             }
 
-            // Get the analysis result (summary text, potential category ID, original category name)
-            AiAnalysisResultDto analysisResult = await dcaService.AnalyzeAndSummarizeAsync(request.Data);
+            // Call the service, passing ChatName
+            var savedSummary = await _dcaService.AnalyzeAndSummarizeAsync(request.Data, request.ChatName); // Pass ChatName
 
-            // Create the Summary object (ChatName is omitted as requested)
-            var summary = new Summary(
-                chatName: "", // ChatName omitted
-                description: analysisResult.SummaryText,
-                createdAt: DateTime.UtcNow // Use current UTC time
-            );
+            // Return the saved Summary object directly
+            return Ok(savedSummary);
+        }
 
-            return Ok(summary); // Return the created Summary object
+        // GET: api/dca/summaries
+        [HttpGet("summaries")]
+        public async Task<ActionResult<IEnumerable<Summary>>> GetAllSummaries()
+        {
+            var summaries = await _dcaService.GetAllSummariesAsync();
+            return Ok(summaries);
+        }
+
+        // GET: api/dca/summaries/{categoryName}
+        [HttpGet("summaries/{categoryName}")]
+        public async Task<ActionResult<IEnumerable<Summary>>> GetSummariesByCategory(string categoryName)
+        {
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                return BadRequest("Category name cannot be empty.");
+            }
+            var summaries = await _dcaService.GetSummariesByCategoryAsync(categoryName);
+            return Ok(summaries);
         }
     }
 
     public class AnalyzeRequest
     {
-        public List<string> Data { get; set; }
+        public List<string> Data { get; set; } = new List<string>(); // Initialize
+        public string? ChatName { get; set; } // Added ChatName property (nullable for safety)
     }
 }

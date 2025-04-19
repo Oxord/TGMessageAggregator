@@ -1,6 +1,9 @@
-using MessageAggregator.Application.Service;
-using MessageAggregator.Domain.Interfaces;
-using MessageAggregator.Infrastructure;
+using Infrastructure; // Keep for AiService, DcaService
+// Removed using Infrastructure.Repositories;
+using MessageAggregator.Application.Service; // Keep for TelegramService, TelegramSettings
+// Removed using MessageAggregator.Application.Services;
+using MessageAggregator.Domain.Interfaces; // Keep for IAIService, IDcaService
+using MessageAggregator.Infrastructure; // Keep for AppDbContext
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -10,8 +13,10 @@ builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("T
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<TelegramService>();
-builder.Services.AddScoped<IAiService, AiService>();
-builder.Services.AddScoped<IDcaService, DcaService>().AddHttpClient();
+// Removed CategoryRepository registration
+// Removed CategoryService registration
+builder.Services.AddHttpClient<IAIService, AiService>(); // Changed from AddScoped to AddHttpClient
+builder.Services.AddScoped<IDcaService, DcaService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
