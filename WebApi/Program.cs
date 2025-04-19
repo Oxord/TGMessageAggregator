@@ -12,6 +12,8 @@ internal class Program
         builder.Services.AddControllers();
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddScoped<MessageAggregator.Domain.Interfaces.ICategoryRepository, Infrastructure.Repositories.CategoryRepository>();
+        builder.Services.AddScoped<MessageAggregator.Application.Interfaces.ICategoryService, MessageAggregator.Application.Services.CategoryService>();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
