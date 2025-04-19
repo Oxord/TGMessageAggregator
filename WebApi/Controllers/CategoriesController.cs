@@ -1,11 +1,6 @@
 using MessageAggregator.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApi.DTOs;
-using Domain.Models; // Required for mapping
-using System; // Required for ArgumentException
 
 namespace WebApi.Controllers
 {

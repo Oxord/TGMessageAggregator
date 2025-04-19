@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_DB: message_aggregator
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  webapi:
+    build:
+      context: ./
+      dockerfile: ./WebApi/Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "5000:8080"
+
+volumes:
+  pgdata:
