@@ -1,11 +1,9 @@
 using MessageAggregator.Domain.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // Added Identity using
 using Microsoft.EntityFrameworkCore;
 
 namespace MessageAggregator.Infrastructure;
 
-// Changed base class to IdentityDbContext<User>
-public class AppDbContext : IdentityDbContext<User>
+public class AppDbContext : DbContext
 {
     public DbSet<Summary> Summaries { get; set; }
 
@@ -16,7 +14,6 @@ public class AppDbContext : IdentityDbContext<User>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder); // Added call to base method for Identity configuration
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }
