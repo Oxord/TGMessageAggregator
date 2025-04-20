@@ -59,86 +59,71 @@ const TelegramControllerComponent: React.FC = () => {
       {/* Endpoint: GET /api/telegram/chats */}
       <EndpointCard
         method="GET"
-        // Corrected path based on controller attribute [HttpGet("/chats")]
         path="/chats"
-        summary="Gets messages from a specific Telegram chat."
+        summary=""
         parameters={
           <>
-            <div>
-              <label htmlFor="getChatsChatId">chatId (long):</label>
-              <input
-                id="getChatsChatId"
-                type="number" // Use number input for ID
-                value={chatId}
-                onChange={(e) => setChatId(e.target.value)}
-                placeholder="Enter Telegram Chat ID"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="getChatsCount">count (int, optional):</label>
-              <input
-                id="getChatsCount"
-                type="number"
-                value={count}
-                onChange={(e) => setCount(e.target.value)}
-                placeholder="Default: 100"
-              />
-            </div>
-            <div>
-              <label htmlFor="getChatsVerificationCode">Verification Code (optional):</label>
-              <input
-                id="getChatsVerificationCode"
-                type="text"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                placeholder="Enter 2FA Verification Code"
-              />
-            </div>
+            <label htmlFor="getChatsChatId">Chat ID</label>
+            <input
+              id="getChatsChatId"
+              type="number"
+              value={chatId}
+              onChange={(e) => setChatId(e.target.value)}
+              placeholder="ID чата"
+              required
+            />
+            <label htmlFor="getChatsCount">Count</label>
+            <input
+              id="getChatsCount"
+              type="number"
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
+              placeholder="100"
+            />
+            <label htmlFor="getChatsVerificationCode">2FA Code</label>
+            <input
+              id="getChatsVerificationCode"
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              placeholder="Код"
+            />
           </>
         }
         onSubmit={handleGetChatsSubmit}
       />
 
-      {/* Endpoint: POST /api/telegram/chats/summary */}
       <EndpointCard
         method="POST"
-        // Corrected path based on controller attribute [HttpPost("/chats/summary")]
         path="/chats/summary"
-        summary="Gets messages from a specific Telegram chat and generates a summary."
+        summary=""
         parameters={
-           <>
-            <div>
-              <label htmlFor="summarizeChatId">chatId (long):</label>
-              <input
-                id="summarizeChatId"
-                type="number" // Use number input for ID
-                value={chatId}
-                onChange={(e) => setChatId(e.target.value)}
-                placeholder="Enter Telegram Chat ID"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="summarizeCount">count (int, optional):</label>
-              <input
-                id="summarizeCount"
-                type="number"
-                value={count}
-                onChange={(e) => setCount(e.target.value)}
-                placeholder="Default: 100"
-              />
-            </div>
-            <div>
-              <label htmlFor="summarizeVerificationCode">Verification Code (optional):</label>
-              <input
-                id="summarizeVerificationCode"
-                type="text"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                placeholder="Enter 2FA Verification Code"
-              />
-            </div>
+          <>
+            <label htmlFor="summarizeChatId">Chat ID</label>
+            <input
+              id="summarizeChatId"
+              type="number"
+              value={chatId}
+              onChange={(e) => setChatId(e.target.value)}
+              placeholder="ID чата"
+              required
+            />
+            <label htmlFor="summarizeCount">Count</label>
+            <input
+              id="summarizeCount"
+              type="number"
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
+              placeholder="100"
+            />
+            <label htmlFor="summarizeVerificationCode">2FA Code</label>
+            <input
+              id="summarizeVerificationCode"
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              placeholder="Код"
+            />
           </>
         }
         onSubmit={handleSummarizeChatSubmit}

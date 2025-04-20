@@ -75,9 +75,8 @@ const EndpointCard: React.FC<EndpointCardProps> = ({
     <div className="endpoint-card">
       <div className="endpoint-header" onClick={handleToggle}>
         <div>
-          <span className={`endpoint-method ${getMethodClass(method)}`}>{method}</span>
+          <span className={`endpoint-method method-blue`}>{method}</span>
           <span className="endpoint-path">{path}</span>
-          <span className="endpoint-summary">{summary}</span>
         </div>
         <span>{isOpen ? '▲' : '▼'}</span>
       </div>
@@ -86,25 +85,22 @@ const EndpointCard: React.FC<EndpointCardProps> = ({
           <form onSubmit={handleSubmit}>
             {parameters && (
               <div className="parameters">
-                <h4>Parameters</h4>
                 {parameters}
               </div>
             )}
             {requestBody && (
               <div className="request-body">
-                <h4>Request Body</h4>
                 {requestBody}
               </div>
             )}
             <button type="submit" disabled={isLoading}>
-              {isLoading ? 'Sending...' : 'Try it out'}
+              {isLoading ? 'Отправка...' : 'Выполнить'}
             </button>
           </form>
 
           {(response || error || isLoading) && (
             <div className="response">
-              <h4>Response</h4>
-              {isLoading && <p>Loading...</p>}
+              {isLoading && <p>Загрузка...</p>}
               {error && <pre className="error">{error}</pre>}
               {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
             </div>

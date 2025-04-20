@@ -69,58 +69,46 @@ const TelegramAuthComponent: React.FC = () => {
 
   return (
     <div className="endpoint-card">
-      <h3>Telegram Authentication</h3>
+      <h3 className="auth-title">Telegram Auth</h3>
       {!isCodeRequested ? (
-        // Step 1: Enter Phone Number
         <div>
-          <p>Enter your phone number to link your Telegram account.</p>
-          <div>
-            <label htmlFor="phoneNumber">Phone Number:</label>
-            <input
-              id="phoneNumber"
-              type="tel" // Use 'tel' type for phone numbers
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="e.g., +1234567890"
-              disabled={isLoading}
-              required
-            />
-          </div>
+          <label htmlFor="phoneNumber">Телефон</label>
+          <input
+            id="phoneNumber"
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="+7XXXXXXXXXX"
+            disabled={isLoading}
+            required
+          />
           <button onClick={handleRequestCode} disabled={isLoading || !phoneNumber}>
-            {isLoading ? 'Sending...' : 'Request Code'}
+            {isLoading ? 'Отправка...' : 'Получить код'}
           </button>
         </div>
       ) : (
-        // Step 2: Enter Code
         <div>
-          <p>Enter the code sent to your Telegram account for {phoneNumber}.</p>
-           {/* Display phone number again for confirmation */}
-           <div>
-             <label htmlFor="phoneNumberStatic">Phone Number:</label>
-             <input id="phoneNumberStatic" type="text" value={phoneNumber} readOnly disabled />
-           </div>
-          <div>
-            <label htmlFor="code">Verification Code:</label>
-            <input
-              id="code"
-              type="text" // Code might contain non-numeric characters
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Enter code"
-              disabled={isLoading}
-              required
-            />
-          </div>
+          <label htmlFor="phoneNumberStatic">Телефон</label>
+          <input id="phoneNumberStatic" type="text" value={phoneNumber} readOnly disabled />
+          <label htmlFor="code">Код</label>
+          <input
+            id="code"
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Код"
+            disabled={isLoading}
+            required
+          />
           <button onClick={handleSubmitCode} disabled={isLoading || !code}>
-            {isLoading ? 'Verifying...' : 'Submit Code'}
+            {isLoading ? 'Проверка...' : 'Ввести код'}
           </button>
-          <button onClick={() => { setIsCodeRequested(false); setMessage(''); setError(''); setCode(''); /* Keep phone number */ }} disabled={isLoading} style={{ marginLeft: '10px' }}>
-            Change Phone Number
+          <button onClick={() => { setIsCodeRequested(false); setMessage(''); setError(''); setCode(''); }} disabled={isLoading} style={{ marginLeft: '10px' }}>
+            Изменить телефон
           </button>
         </div>
       )}
 
-      {/* Display Messages/Errors */}
       {message && <p className="success-message">{message}</p>}
       {error && <p className="error-message">{error}</p>}
     </div>

@@ -24,13 +24,29 @@ code {
 }
 
 h1, h2 {
-  color: #333;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+  color: #1a4fa3;
+  border-bottom: none;
+  padding-bottom: 0;
   margin-bottom: 20px;
 }
 
 h1 {
+  text-align: center;
+}
+
+.project-title {
+  color: #1761c7;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+}
+
+.auth-title {
+  color: #1761c7;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 18px;
   text-align: center;
 }
 
@@ -66,18 +82,26 @@ h1 {
 
 .endpoint-method {
   font-weight: bold;
-  padding: 3px 8px;
-  border-radius: 3px;
+  padding: 3px 10px;
+  border-radius: 4px;
   color: #fff;
   margin-right: 10px;
   text-transform: uppercase;
-  font-size: 0.9em;
+  font-size: 1em;
+  background: #1761c7;
+  border: none;
 }
 
-.method-post { background-color: #49cc90; }
-.method-get { background-color: #61affe; }
-.method-put { background-color: #fca130; }
-.method-delete { background-color: #f93e3e; }
+.method-blue {
+  background: #1761c7 !important;
+}
+
+.method-post,
+.method-get,
+.method-put,
+.method-delete {
+  background: #1761c7 !important;
+}
 
 .endpoint-path {
   font-family: monospace;
@@ -132,18 +156,20 @@ textarea {
 }
 
 button {
-  background-color: #007bff;
+  background-color: #1761c7;
   color: white;
-  padding: 10px 15px;
+  padding: 10px 22px;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.9em;
+  font-size: 1em;
+  font-weight: 500;
   transition: background-color 0.2s ease;
+  margin-top: 8px;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #114080;
 }
 
 button:disabled {
@@ -152,17 +178,28 @@ button:disabled {
 }
 
 pre {
-  background-color: #2d2d2d;
-  color: #f1f1f1;
+  background-color: #f4f8ff;
+  color: #1a4fa3;
   padding: 15px;
   border-radius: 4px;
   overflow-x: auto;
-  font-size: 0.85em;
+  font-size: 0.95em;
   white-space: pre-wrap;
   word-wrap: break-word;
+  border: 1px solid #e3eaf6;
 }
 
+.success-message {
+  color: #1761c7;
+  font-weight: 500;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.error-message,
 .error {
-    color: #dc3545;
-    font-weight: bold;
+  color: #e53935;
+  font-weight: 500;
+  margin-top: 10px;
+  text-align: center;
 }
