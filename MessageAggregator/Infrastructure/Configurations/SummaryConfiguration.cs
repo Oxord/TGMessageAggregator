@@ -10,9 +10,15 @@ public class SummaryConfiguration : IEntityTypeConfiguration<Summary>
     {
         builder.HasIndex(s => s.CreatedAt);
 
-        builder.Property(s => s.ChatName)
-            .IsRequired()
-            .HasMaxLength(200);
-      
+            // Removed Category relationship configuration
+
+            builder.Property(s => s.CategoryName) // Added configuration for CategoryName
+                .IsRequired()
+                 .HasMaxLength(100); // Assuming a max length for the category name
+
+            builder.Property(s => s.ChatName)
+                // .IsRequired() // Removed to make ChatName nullable
+                .HasMaxLength(200);
+
     }
 }

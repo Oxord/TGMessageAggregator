@@ -9,8 +9,8 @@ public class AppDbContext : DbContext
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
-    {
-    }
+    {}
+        // Removed DbSet<Category>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
