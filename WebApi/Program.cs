@@ -10,8 +10,7 @@ builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("T
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<TelegramService>();
-builder.Services.AddScoped<IAiService, AiService>();
-builder.Services.AddScoped<IDcaService, DcaService>().AddHttpClient();
+builder.Services.AddScoped<IAiService, AiService>().AddHttpClient();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

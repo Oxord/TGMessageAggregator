@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("/api/telegram")]
-public class TelegramController(TelegramService telegramService, IDcaService dcaService) : ControllerBase
+public class TelegramController(TelegramService telegramService, IAiService openAiService) : ControllerBase
 {
     [HttpGet("/chats")]
     public async Task<ActionResult<List<ChatBase>>> GetAllChats(
@@ -22,13 +22,14 @@ public class TelegramController(TelegramService telegramService, IDcaService dca
     }
 
     [HttpPost("/chats/summary")]
-    public async Task<ActionResult<AiAnalysisResultDto>> SummarizeChat(
+    public async Task<ActionResult<List<AiAnalysisResultDto>>> SummarizeChat(
         [Required] [FromQuery] long chatId,
+        [Required] [FromQuery] [MinLength(1)] List<string> intends,
         [FromQuery] int count = 100
     )
     {
         List<string> messages = await telegramService.GetMessagesAsync(chatId, count);
-        AiAnalysisResultDto analysisResult = await dcaService.AnalyzeAndSummarizeAsync(messages);
+        List<AiAnalysisResultDto> analysisResult = await openAiService.AnalyzeAsync(messages, intends);
         return Ok(analysisResult);
     }
 }
