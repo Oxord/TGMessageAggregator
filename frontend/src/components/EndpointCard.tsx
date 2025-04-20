@@ -1,5 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import axios, { AxiosRequestConfig, Method } from 'axios';
+import SummaryList from './SummaryList';
+import { Summary } from '../types/models';
 
 interface EndpointCardProps {
   method: Method;
@@ -102,7 +104,15 @@ const EndpointCard: React.FC<EndpointCardProps> = ({
             <div className="response">
               {isLoading && <p>Загрузка...</p>}
               {error && <pre className="error">{error}</pre>}
-              {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+              {response && (
+                Array.isArray(response) && response.length > 0 && isSummaryArray(response) ? (
+                  <SummaryList summaries={response as Summary[]} />
+                ) : isSummaryObject(response) ? (
+                  <SummaryList summaries={[response as Summary]} />
+                ) : (
+                  <pre>{JSON.stringify(response, null, 2)}</pre>
+                )
+              )}
             </div>
           )}
         </div>
@@ -110,5 +120,18 @@ const EndpointCard: React.FC<EndpointCardProps> = ({
     </div>
   );
 };
+
+function isSummaryObject(obj: any): obj is Summary {
+  return obj &&
+    typeof obj === 'object' &&
+    typeof obj.id === 'string' &&
+    'description' in obj &&
+    'categoryName' in obj &&
+    'createdAt' in obj;
+}
+
+function isSummaryArray(arr: any[]): arr is Summary[] {
+  return arr.length > 0 && arr.every(isSummaryObject);
+}
 
 export default EndpointCard;
