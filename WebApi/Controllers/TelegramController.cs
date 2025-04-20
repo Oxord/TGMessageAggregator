@@ -3,7 +3,6 @@ using MessageAggregator.Application.Service;
 using MessageAggregator.Domain.DTOs;
 using MessageAggregator.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using TL;
 
 namespace WebApi.Controllers;
 

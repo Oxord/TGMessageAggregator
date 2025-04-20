@@ -62,24 +62,24 @@ const DcaControllerComponent: React.FC = () => {
       <EndpointCard
         method="POST"
         path="/api/dca/analyze"
-        summary="Analyzes messages and returns a summary."
+        summary=""
         requestBody={
           <>
-            <label htmlFor="analyzeChatName">ChatName (string):</label>
+            <label htmlFor="analyzeChatName">Chat</label>
             <input
               id="analyzeChatName"
               type="text"
               value={analyzeChatName}
               onChange={(e) => setAnalyzeChatName(e.target.value)}
-              placeholder="Enter chat name"
+              placeholder="Название чата"
               required
             />
-            <label htmlFor="analyzeData">Data (JSON array of strings):</label>
+            <label htmlFor="analyzeData">Data</label>
             <textarea
               id="analyzeData"
               value={analyzeData}
               onChange={(e) => setAnalyzeData(e.target.value)}
-              placeholder='e.g., ["message one", "message two"]'
+              placeholder='["сообщение1", "сообщение2"]'
               required
             />
           </>
@@ -87,28 +87,26 @@ const DcaControllerComponent: React.FC = () => {
         onSubmit={handleAnalyzeSubmit}
       />
 
-      {/* Endpoint: GET /api/dca/summaries */}
       <EndpointCard
         method="GET"
         path="/api/dca/summaries"
-        summary="Retrieves all previously generated summaries."
+        summary=""
         onSubmit={handleGetAllSummariesSubmit}
       />
 
-      {/* Endpoint: GET /api/dca/summaries/{categoryName} */}
       <EndpointCard
         method="GET"
         path="/api/dca/summaries/{categoryName}"
-        summary="Retrieves summaries filtered by category name."
+        summary=""
         parameters={
           <>
-            <label htmlFor="categoryName">categoryName (string):</label>
+            <label htmlFor="categoryName">Category</label>
             <input
               id="categoryName"
               type="text"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              placeholder="Enter category name"
+              placeholder="Категория"
               required
             />
           </>

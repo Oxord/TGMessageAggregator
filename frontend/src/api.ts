@@ -2,13 +2,14 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // Configure the base URL for the API.
 // Adjust this if your backend runs on a different port or host.
-const API_BASE_URL = 'http://localhost:5000'; // Common default for ASP.NET Core dev
+const API_BASE_URL = 'http://localhost:5008'; // Corrected port based on backend logs
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Send cookies with requests
 });
 
 // Generic function to handle API requests

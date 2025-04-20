@@ -120,16 +120,6 @@ public class AiService(HttpClient httpClient, IConfiguration configuration) : IA
         response.EnsureSuccessStatusCode();
         var responseContent = await response.Content.ReadAsStringAsync();
 
-        // Пример структуры ответа OpenAI
-        // {
-        //   "choices": [
-        //     {
-        //       "message": {
-        //         "content": "[{\"summary\": \"...\", \"intend\": \"...\"}, ...]"
-        //       }
-        //     }
-        //   ]
-        // }
 
         dynamic? result = JsonConvert.DeserializeObject(responseContent);
         string? content = result?.choices?[0]?.message?.content;
