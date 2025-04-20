@@ -1,6 +1,7 @@
 using WTelegram;
 using TL;
 using Microsoft.Extensions.Options;
+using MessageAggregator.Domain.DTOs;
 
 namespace MessageAggregator.Application.Service;
 
@@ -15,9 +16,6 @@ public class TelegramService : IDisposable
         _client = new Client(Config);
     }
 
-    // WTelegramClient требует обработчик конфигурации для авторизации
-
-    // Обработчик конфигурации для WTelegramClient
     private string Config(string what)
     {
         return what switch
@@ -30,20 +28,28 @@ public class TelegramService : IDisposable
         };
     }
 
-    public async Task<List<string>> GetMessagesAsync(long chatIdentifier, int count, string? verificationCode = null)
+    public async Task<List<ChatMessageDto>> GetMessagesAsync(
+        long chatIdentifier,
+        int count,
+        string? verificationCode = null
+    )
     {
         _settings.VerificationCode = verificationCode ?? string.Empty;
         await _client.LoginUserIfNeeded();
 
-        // Поиск чата по username или ID
-        var dialogs = await _client.Messages_GetAllDialogs();
-        ChatBase chat = dialogs.chats.Values.FirstOrDefault(c =>
-            (c is Channel channelObj && channelObj.username == chatIdentifier.ToString()) ||
-            c.ID == chatIdentifier
-        ) ?? throw new Exception("Чат не найден");
+        Messages_Dialogs dialogs = await _client.Messages_GetAllDialogs();
 
-        // Получение сообщений
-        Messages_MessagesBase? messagesBase = await _client.Messages_GetHistory(chat, limit: count);
+        ChatBase chat = dialogs.chats.Values.First(c => c.ID == chatIdentifier);
+
+        Messages_MessagesBase messagesBase = await _client.Messages_GetHistory(chat, count);
+        // Получаем коллекцию пользователей из ответа Telegram API
+        Dictionary<long, User> users = messagesBase switch
+        {
+            Messages_Messages mm => mm.users,
+            Messages_ChannelMessages mcm => mcm.users,
+            _ => new Dictionary<long, User>(),
+        };
+
         IEnumerable<Message> messageList = messagesBase switch
         {
             Messages_Messages mm => mm.messages.OfType<Message>(),
@@ -51,13 +57,21 @@ public class TelegramService : IDisposable
             _ => [],
         };
 
-        List<string> texts = messageList
+        List<ChatMessageDto> chatMessages = messageList
             .Where(m => !string.IsNullOrEmpty(m.message))
             .OrderBy(m => m.date)
-            .Select(m => m.message)
+            .Select(m => new ChatMessageDto
+            {
+                Message = m.message,
+                Sender = users.TryGetValue(m.From.ID, out var user)
+                    ? $"{user.first_name} {user.last_name}".Trim()
+                        .Replace("  ", " ")
+                        .Trim()
+                    : m.From.ID.ToString(),
+            })
             .ToList();
 
-        return texts;
+        return chatMessages;
     }
 
     public void Dispose()

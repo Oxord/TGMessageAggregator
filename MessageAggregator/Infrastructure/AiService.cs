@@ -13,7 +13,7 @@ public class AiService(HttpClient httpClient, IConfiguration configuration) : IA
     private readonly string _endpoint = configuration["OpenAI:Endpoint"]!;
     private readonly string _model = configuration["OpenAI:Model"]!;
 
-    public async Task<List<AiAnalysisResultDto>> AnalyzeAsync(List<string> data, List<string> intends)
+    public async Task<AiSummaries> AnalyzeAsync(List<ChatMessageDto> data, List<string> intends)
     {
         try
         {
@@ -21,19 +21,22 @@ public class AiService(HttpClient httpClient, IConfiguration configuration) : IA
 
             try
             {
-                List<AiAnalysisResultDto>? aiResponses =
-                    JsonConvert.DeserializeObject<List<AiAnalysisResultDto>>(content);
-                if (aiResponses is not { Count: > 0 })
-                    return
-                    [
-                        new AiAnalysisResultDto
-                        {
-                            Summary = content,
-                            Intend = "Unknown"
-                        },
-                    ];
+                AiSummaries? aiResponses =
+                    JsonConvert.DeserializeObject<AiSummaries>(content);
+                if (aiResponses?.Results is not { Count: > 0 })
+                    return new AiSummaries
+                    {
+                        Results =
+                        [
+                            new AiAnalysisResultDto
+                            {
+                                Summary = content,
+                                Intend = "Unknown"
+                            },
+                        ]
+                    };
 
-                foreach (AiAnalysisResultDto item in aiResponses)
+                foreach (AiAnalysisResultDto item in aiResponses.Results)
                 {
                     item.Intend = item.Intend.Trim();
                 }
@@ -42,44 +45,50 @@ public class AiService(HttpClient httpClient, IConfiguration configuration) : IA
             }
             catch (JsonException jsonEx)
             {
-                // Handle JSON parsing specific errors, maybe log jsonEx
-                return
-                [
-                    new AiAnalysisResultDto
-                    {
-                        Summary = $"AI response JSON parsing error: {content}. Error message: {jsonEx.Message}",
-                        Intend = "Error"
-                    },
-                ];
+                return new AiSummaries
+                {
+                    Results =
+                    [
+                        new AiAnalysisResultDto
+                        {
+                            Summary = $"AI response JSON parsing error: {content}. Error message: {jsonEx.Message}",
+                            Intend = "Error"
+                        },
+                    ]
+                };
             }
         }
         catch (HttpRequestException httpEx)
         {
-            // Handle HTTP specific errors
-            return
-            [
-                new AiAnalysisResultDto
-                {
-                    Summary = $"AI HTTP error: {httpEx.Message}",
-                    Intend = "Error"
-                },
-            ];
+            return new AiSummaries
+            {
+                Results =
+                [
+                    new AiAnalysisResultDto
+                    {
+                        Summary = $"AI HTTP error: {httpEx.Message}",
+                        Intend = "Error"
+                    },
+                ],
+            };
         }
         catch (Exception ex)
         {
-            // Handle other general errors
-            return
-            [
-                new AiAnalysisResultDto
-                {
-                    Summary = $"AI general error: {ex.Message}",
-                    Intend = "Error"
-                },
-            ];
+            return new AiSummaries
+            {
+                Results =
+                [
+                    new AiAnalysisResultDto
+                    {
+                        Summary = $"AI general error: {ex.Message}",
+                        Intend = "Error"
+                    },
+                ]
+            };
         }
     }
 
-    private async Task<string> SendPrompt(List<string> data, List<string> intends)
+    private async Task<string> SendPrompt(List<ChatMessageDto> data, List<string> intends)
     {
         string jsonData = JsonConvert.SerializeObject(data);
 
@@ -87,16 +96,18 @@ public class AiService(HttpClient httpClient, IConfiguration configuration) : IA
             $"Представь, что ты - человек, которому надо мониторить чаты и вычленять из них важную информацию для бизнеса компании. " +
             $"Проанализируй все сообщения из чата Telegram в виде массива строк в формате JSON и составь своими словами небольшую сводку " +
             $"по следующим категориям ({string.Join(", ", intends)}). На каждую категорию должна быть своя выжимка. " +
-            $"Ответь без лишних слов чётко в формате JSON: [{{\"summary\": \"...\", \"intend\": \"...\"}}], " +
-            $"где каждый элемент массива - одна из категорий. Массив строк: {jsonData}";
+            $"У сообщения есть контент (Message) и отправитель (Sender). Отправителя можешь использовать для структурирования информации. " +
+            $"Ответь без лишних слов чётко в формате JSON: {{results: [{{\"summary\": \"...\", \"intend\": \"...\"}}, ...] }}, " +
+            $"где каждый элемент массива - одна из категорий (summary - сводка, intend - категория сводки). Массив строк: {jsonData}";
 
         object requestBody = new
         {
             model = _model,
             messages = new[]
             {
-                new { role = "user", content = prompt }
-            }
+                new { role = "user", content = prompt },
+            },
+            response_format = new { type = "json_object" },
         };
 
         var requestJson = JsonConvert.SerializeObject(requestBody);
@@ -127,6 +138,6 @@ public class AiService(HttpClient httpClient, IConfiguration configuration) : IA
             throw new InvalidOperationException("Prompt was empty");
         }
 
-        return content.Substring(7, content.Length - 10);
+        return content;
     }
 }
