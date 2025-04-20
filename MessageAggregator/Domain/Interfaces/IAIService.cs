@@ -1,9 +1,13 @@
-using MessageAggregator.Domain.DTOs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MessageAggregator.Domain.Models;
 
 namespace MessageAggregator.Domain.Interfaces;
 
-public interface IAiService
+public interface IAIService
 {
     // Changed parameter type from string to IEnumerable<string>
-    Task<List<AiAnalysisResultDto>> AnalyzeAsync(List<string> data, List<string> intends);
+    // Changed return type to Summary
+    // Added chatName parameter
+    Task<Summary> AnalyzeAsync(IEnumerable<string> data, string chatName);
 }
