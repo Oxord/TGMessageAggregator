@@ -8,16 +8,20 @@ const TelegramControllerComponent: React.FC = () => {
   // State for GET /chats and POST /chats/summary inputs
   const [chatId, setChatId] = useState<string>(''); // Input as string, backend expects long
   const [count, setCount] = useState<string>('100'); // Input as string, backend expects int
+  const [verificationCode, setVerificationCode] = useState<string>(''); // State for verification code
 
   // --- Handler for GET /api/telegram/chats ---
   const handleGetChatsSubmit = async (): Promise<string[]> => { // Expecting list of strings based on controller
     if (!chatId) {
-        throw new Error('Chat ID cannot be empty.');
+      throw new Error('Chat ID cannot be empty.');
     }
     const params = new URLSearchParams();
     params.append('chatId', chatId);
     if (count) {
-        params.append('count', count);
+      params.append('count', count);
+    }
+    if (verificationCode) {
+      params.append('verificationCode', verificationCode);
     }
 
     const config: AxiosRequestConfig = {
@@ -36,16 +40,19 @@ const TelegramControllerComponent: React.FC = () => {
     const params = new URLSearchParams();
     params.append('chatId', chatId);
     if (count) {
-        params.append('count', count);
+      params.append('count', count);
+    }
+    if (verificationCode) {
+      params.append('verificationCode', verificationCode);
     }
 
     const config: AxiosRequestConfig = {
       method: 'POST',
       url: `/api/telegram/chats/summary?${params.toString()}`, // Note: Controller route is just /chats/summary
-      // No request body needed for this POST, parameters are in query string
     };
     return callApi<Summary>(config);
   };
+
 
   return (
     <div>
@@ -76,6 +83,16 @@ const TelegramControllerComponent: React.FC = () => {
                 value={count}
                 onChange={(e) => setCount(e.target.value)}
                 placeholder="Default: 100"
+              />
+            </div>
+            <div>
+              <label htmlFor="getChatsVerificationCode">Verification Code (optional):</label>
+              <input
+                id="getChatsVerificationCode"
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder="Enter 2FA Verification Code"
               />
             </div>
           </>
@@ -110,6 +127,16 @@ const TelegramControllerComponent: React.FC = () => {
                 value={count}
                 onChange={(e) => setCount(e.target.value)}
                 placeholder="Default: 100"
+              />
+            </div>
+            <div>
+              <label htmlFor="summarizeVerificationCode">Verification Code (optional):</label>
+              <input
+                id="summarizeVerificationCode"
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder="Enter 2FA Verification Code"
               />
             </div>
           </>

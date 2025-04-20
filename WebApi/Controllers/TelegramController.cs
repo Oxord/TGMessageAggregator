@@ -14,10 +14,11 @@ public class TelegramController(TelegramService telegramService, IAiService open
     [HttpGet("/chats")]
     public async Task<ActionResult<List<ChatBase>>> GetAllChats(
         [Required] [FromQuery] long chatId,
-        [FromQuery] int count = 100
+        [FromQuery] int count = 100,
+        [FromQuery] string? verificationCode = null
     )
     {
-        List<string> messages = await telegramService.GetMessagesAsync(chatId, count);
+        List<string> messages = await telegramService.GetMessagesAsync(chatId, count, verificationCode);
         return Ok(messages);
     }
 
@@ -25,10 +26,11 @@ public class TelegramController(TelegramService telegramService, IAiService open
     public async Task<ActionResult<List<AiAnalysisResultDto>>> SummarizeChat(
         [Required] [FromQuery] long chatId,
         [Required] [FromQuery] [MinLength(1)] List<string> intends,
-        [FromQuery] int count = 100
+        [FromQuery] int count = 100,
+        [FromQuery] string? verificationCode = null
     )
     {
-        List<string> messages = await telegramService.GetMessagesAsync(chatId, count);
+        List<string> messages = await telegramService.GetMessagesAsync(chatId, count, verificationCode);
         List<AiAnalysisResultDto> analysisResult = await openAiService.AnalyzeAsync(messages, intends);
         return Ok(analysisResult);
     }

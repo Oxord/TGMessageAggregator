@@ -25,25 +25,22 @@ public class TelegramService : IDisposable
             "api_id" => _settings.AppId,
             "api_hash" => _settings.ApiHash,
             "phone_number" => _settings.PhoneNumber,
+            "verification_code" => _settings.VerificationCode,
             _ => null!,
         };
     }
 
-    public async Task<List<string>> GetMessagesAsync(long chatIdentifier, int count)
+    public async Task<List<string>> GetMessagesAsync(long chatIdentifier, int count, string? verificationCode = null)
     {
+        _settings.VerificationCode = verificationCode ?? string.Empty;
         await _client.LoginUserIfNeeded();
 
         // Поиск чата по username или ID
         var dialogs = await _client.Messages_GetAllDialogs();
-        ChatBase? chat = dialogs.chats.Values.FirstOrDefault(c =>
+        ChatBase chat = dialogs.chats.Values.FirstOrDefault(c =>
             (c is Channel channelObj && channelObj.username == chatIdentifier.ToString()) ||
             c.ID == chatIdentifier
-        );
-
-        if (chat == null)
-        {
-            throw new Exception("Чат не найден");
-        }
+        ) ?? throw new Exception("Чат не найден");
 
         // Получение сообщений
         Messages_MessagesBase? messagesBase = await _client.Messages_GetHistory(chat, limit: count);
